@@ -1,7 +1,8 @@
-import 'package:animated_segment/segment_animation.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:pino/Widgets/glass_container.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,11 +41,33 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   List<String> skills = ['Flutter', 'Vue', 'React', 'Python'];
   int selected = 0;
+
+  void _opneUrl(String host, [String? path]) async {
+    final Uri link = Uri(scheme: 'https', host: host, path: path);
+    if (await canLaunchUrl(link)) {
+      await launchUrl(link);
+    } else {
+      throw 'このURLにはアクセスできません';
+    }
+  }
+
+  final PageController controller = PageController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      // appBar: AppBar(),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: FloatingActionButton(
+          backgroundColor: Colors.transparent,
+          onPressed: () {},
+          child: GestureDetector(
+            onTap: () => _opneUrl('github.com', 'kz422'),
+            child: Image.asset('images/github.png'),
+          ),
+        ),
+      ),
+      extendBodyBehindAppBar: true,
       body: Container(
         height: double.infinity,
         width: double.infinity,
@@ -53,7 +76,7 @@ class _HomeState extends State<Home> {
           colors: [
             Color(0xff26516b),
             Color(0xff3f446d),
-            // Color(0xff442842),
+            Color(0xff442842),
             Color(0xffe9bff1),
             // Color(0xffe9bff1),
           ],
@@ -69,23 +92,22 @@ class _HomeState extends State<Home> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      SizedBox.shrink(),
+                      const SizedBox.shrink(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const CircleAvatar(
                             radius: 92,
-                            backgroundImage: AssetImage('images/avatar.jpg'),
+                            backgroundImage: AssetImage('./images/avatar.jpg'),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 20,
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox.shrink(),
-                              Text(
-                                'INOUE\nKAZUKI',
+                              const SizedBox.shrink(),
+                              DefaultTextStyle(
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline2!
@@ -93,6 +115,17 @@ class _HomeState extends State<Home> {
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                     ),
+                                child: AnimatedTextKit(
+                                  isRepeatingAnimation: false,
+                                  animatedTexts: [
+                                    TypewriterAnimatedText(
+                                      'INOUE\nKAZUKI',
+                                      speed: const Duration(
+                                        milliseconds: 150,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                               Text(
                                 'Portfolio with Flutter Web',
@@ -108,7 +141,7 @@ class _HomeState extends State<Home> {
                       Column(
                         children: [
                           DefaultTextStyle(
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                             child: AnimatedTextKit(
                               repeatForever: true,
                               isRepeatingAnimation: true,
@@ -119,7 +152,7 @@ class _HomeState extends State<Home> {
                               ],
                             ),
                           ),
-                          Icon(
+                          const Icon(
                             Icons.arrow_downward,
                             color: Colors.white,
                           )
@@ -142,12 +175,19 @@ class _HomeState extends State<Home> {
                             .headline2!
                             .copyWith(color: Colors.white),
                       ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Text(
+                          '* * *',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height,
+                // height: MediaQuery.of(context).size.height,
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -159,20 +199,47 @@ class _HomeState extends State<Home> {
                             .headline2!
                             .copyWith(color: Colors.white),
                       ),
-                      AnimatedSegment(
-                        segmentNames: ['Flutter', 'Vue', 'React'],
-                        onSegmentChanged: (index) {
-                          setState(() {
-                            selected = index;
-                          });
-                          print('Selected Segment Index is: $index');
-                        },
-                        backgroundColor: Colors.white.withAlpha(70),
-                        segmentTextColor: Colors.white,
-                        rippleEffectColor: AppColors.primary,
-                        selectedSegmentColor: Colors.pinkAccent,
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Text(
+                          '* * *',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
-                      skillBuilder(selected)
+                      Wrap(
+                        direction: Axis.horizontal,
+                        children: [
+                          _glassContainer(
+                            Devs(
+                              'Flutter',
+                              [
+                                Apps('moood', 'apps.apple.com',
+                                    '/jp/app/moood/id1602684350'),
+                              ],
+                            ),
+                          ),
+                          _glassContainer(
+                            Devs(
+                              'Vue',
+                              [
+                                Apps('sb4you', 'sb-4you.com', ''),
+                                Apps('cpbd', 'cpbd.site', '', 'sasa'),
+                              ],
+                            ),
+                          ),
+                          _glassContainer(
+                            Devs(
+                              'React',
+                              [
+                                Apps('MovieHack', 'movie-hack.com', ''),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 40,
+                      )
                     ],
                   ),
                 ),
@@ -193,6 +260,108 @@ class _HomeState extends State<Home> {
       case 2:
         return Text(skills[2]);
     }
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
+
+  Widget _glassContainer(Devs devs) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GlassContainer(
+        width: 300,
+        height: 350,
+        radius: 40,
+        borderRadius: BorderRadius.circular(20),
+        blur: 40,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: Image.asset(
+                  './images/${devs.name.toLowerCase()}.png',
+                ),
+              ),
+            ),
+            Text(
+              devs.name,
+              style: const TextStyle(color: Colors.white),
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            SizedBox(
+              width: 300,
+              height: 250,
+              child: PageView.builder(
+                controller: controller,
+                itemCount: devs.apps.length,
+                itemBuilder: (context, index) {
+                  final app = devs.apps[index];
+                  return Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () => _opneUrl(
+                          app.host,
+                          app.path!.isNotEmpty ? app.path : null,
+                        ),
+                        child: Container(
+                          height: 200,
+                          width: 200,
+                          color: Colors.white,
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                'images/${app.appName.toLowerCase()}.png',
+                                width: 200,
+                                height: 200,
+                                fit: BoxFit.cover,
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 2,
+                      ),
+                      Text(
+                        app.appName,
+                        style: const TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      const Spacer(),
+                      Text(
+                        '${index + 1} / ${devs.apps.length}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .caption!
+                            .copyWith(color: Colors.white),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class Devs {
+  final String name;
+  final List<Apps> apps;
+
+  Devs(this.name, this.apps);
+}
+
+class Apps {
+  final String appName;
+  final String host;
+  final String? path;
+  final String? desc;
+
+  Apps(this.appName, this.host, [this.path, this.desc]);
 }
